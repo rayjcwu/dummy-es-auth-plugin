@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>info.rayjcwu</groupId>
+  <artifactId>dummy-es-auth-plugin</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1</version>
+  <name>dummy-es-auth-plugin</name>
+
+  <properties>
+    <elasticsearch.version>5.1.2</elasticsearch.version>
+  </properties>
+  <!--dependencies-->
+  <dependencies>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <version>${elasticsearch.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- start of elasticsearch test framework -->
+    <dependency>
+      <groupId>org.elasticsearch.test</groupId>
+      <artifactId>framework</artifactId>
+      <version>${elasticsearch.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>4.2.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.7</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- end of elasticsearch test framework -->
+  </dependencies>
+  <!--build-->
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>*.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <outputDirectory>${project.build.directory}/releases/</outputDirectory>
+          <descriptors>
+            <descriptor>${basedir}/src/main/assemblies/plugin.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <!-- start of randomized testing framework-->
+      <plugin>
+        <!-- we skip surefire to work with randomized testing above -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.carrotsearch.randomizedtesting</groupId>
+        <artifactId>junit4-maven-plugin</artifactId>
+        <version>2.5.0</version>
+
+        <configuration>
+          <assertions enableSystemAssertions="false">
+            <enable/>
+          </assertions>
+
+          <listeners>
+            <report-text />
+          </listeners>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>unit-tests</id>
+            <phase>test</phase>
+            <goals>
+              <goal>junit4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
