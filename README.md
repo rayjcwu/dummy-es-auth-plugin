@@ -1,5 +1,6 @@
 # dummy-es-auth-plugin
-A dummy ElasticSearch authentication plugin. This plugin works on ElasticSearch 5.1.2 only
+
+A dummy ElasticSearch authentication plugin. This plugin works on ElasticSearch 5.1.2 only.
 
 # Install
 
@@ -28,18 +29,18 @@ Most works are in `DummyAuthRestHandler`.
 
 There are mainly two kinds of handlers, `RestHandler` and `ActionHandler`.
 In `Plugin`, if you choose `RestHandler`, you can add multiple endpoints and corresponding `RestFilter`.
-Or choose `ActionHandler` or `ActionFilter`, which handle particualr ElasticSearch `Request` event, but it doesn't have any information related to Http headers.
-In original ElasticSearch source code it did the conversion right here https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/action/search/RestSearchAction.java#L78-L84 .
+If you choose `ActionHandler` or `ActionFilter`, you can handle particualr ElasticSearch `Request` event, but it doesn't have any information related to Http headers.
+In original ElasticSearch source code it did the conversion [right here](https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/action/search/RestSearchAction.java#L78-L84).
 `RestRequest` (handled by `RestHandler`) is converted to `SearchRequest` (handled by `ActionHandler`). 
 At this point I don't find any way to retrieve `RestRequest` from `ActionHandler`, nor pass http headers to `ActionHandler`, therefore I choose to add one more `RestHandler`.
 
 To add one more `RestHandler`, I `extends BaseRestHandler` and register only `RestFilter` without any `RestHandler`.
-The reason this will work is in ElasticSearch source code https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/RestController.java#L188-L206 ,
+The reason this will work is in ElasticSearch [source code](https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/RestController.java#L188-L206),
 no matter which endpoint you hit, as long as your chain of `RestFilter` is not empty, it will go through chain of all `RestFilter` first, then dispatch to the corresponding handler based on your URI.
 
-The way to send error message is also found in ElasticSearch source code https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/RestController.java#L250  
+The way to send error message is also found in ElasticSearch [source code](https://github.com/elastic/elasticsearch/blob/v5.1.2/core/src/main/java/org/elasticsearch/rest/RestController.java#L250)  
   
 # Reference
 
-- http://david.pilato.fr/blog/2016/10/19/adding-a-new-rest-endpoint-to-elasticsearch-updated-for-ga/
-- https://github.com/floragunncom/search-guard/tree/es-5.1.2
+- The only plugin guide for ES > 5 I found: http://david.pilato.fr/blog/2016/10/19/adding-a-new-rest-endpoint-to-elasticsearch-updated-for-ga/
+- The only open source plugin for ES > 5 I found: https://github.com/floragunncom/search-guard/tree/es-5.1.2
